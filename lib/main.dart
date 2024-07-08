@@ -1,4 +1,4 @@
-import 'package:employee_time_tracking/colors.dart';
+import 'colors.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
