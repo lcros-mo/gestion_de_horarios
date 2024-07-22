@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'services/db_service.dart';
+import 'package:gestion_de_horarios/services/auth_service.dart';
+import 'package:gestion_de_horarios/services/db_service.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   HomeScreenState createState() => HomeScreenState();
@@ -37,8 +39,20 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context, listen: false);
     return Scaffold(
-      appBar: AppBar(title: const Text('Home')),
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.exit_to_app),
+            onPressed: () async {
+              await authService.signOut();
+              Navigator.pushReplacementNamed(context, '/');
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
@@ -52,7 +66,7 @@ class HomeScreenState extends State<HomeScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () => _addEntry('Salida'),
-                  child: const Text('Salida'),
+                  child: const Text('Registrar Salida'),
                 ),
               ],
             ),
