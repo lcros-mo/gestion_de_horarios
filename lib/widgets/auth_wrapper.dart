@@ -6,7 +6,7 @@ import 'package:gestion_de_horarios/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
 class AuthWrapper extends StatelessWidget {
-  const AuthWrapper({Key? key}) : super(key: key);
+  const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,28 @@ class AuthWrapper extends StatelessWidget {
       builder: (_, AsyncSnapshot<User?> snapshot) {
         if (snapshot.connectionState == ConnectionState.active) {
           final User? user = snapshot.data;
-          return user == null ? const LoginScreen() : const HomeScreen();
+          if (user == null) {
+            print('Usuario no autenticado, mostrando LoginScreen');
+            return const LoginScreen();
+          } else {
+            return FutureBuilder<bool>(
+              future: authService.isUserAuthorized(user.email!),
+              builder: (_, AsyncSnapshot<bool> authSnapshot) {
+                if (authSnapshot.connectionState == ConnectionState.done) {
+                  if (authSnapshot.data == true) {
+                    print('Usuario autenticado y autorizado, mostrando HomeScreen');
+                    return const HomeScreen();
+                  } else {
+                    print('Usuario autenticado pero no autorizado, mostrando LoginScreen');
+                    // Aquí podrías mostrar un mensaje de error o cerrar la sesión
+                    authService.signOut();
+                    return const LoginScreen();
+                  }
+                }
+                return const Scaffold(body: Center(child: CircularProgressIndicator()));
+              },
+            );
+          }
         }
         return const Scaffold(body: Center(child: CircularProgressIndicator()));
       },
